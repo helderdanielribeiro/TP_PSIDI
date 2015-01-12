@@ -7,7 +7,7 @@
 
 	<header>
 		<% include ../partials/header %>
-		<% if (user !== undefined){%>
+		<% if (user.id !== undefined){%>
 			<div align="right">
 				<h4>Bem Vindo, <%=user.name%></h4><a href="/logout">Sair</a>
 			</div>

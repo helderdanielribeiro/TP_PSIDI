@@ -233,16 +233,20 @@ function handleGetUserAlbums(req, res) {
 	}
 	else {
 		if (albums[req.userID] !== undefined) {
-			var userAlbums = albums[req.userID];
-			userAlbums.forEach(function(album) {
+			var userAlbums = [];
+			albums[req.userID].forEach(function(album) {
 				var photosURI = [];
 				album.photos.forEach(function(photo) {	
 					var photoURI = SERVER_ROOT + "/photos/" + photo.id;
 					
 					photosURI.push({uri: photoURI, description: photo.description, date: photo.date});
 				});
-				
-				album.photos = photosURI;
+				albumOutput = {
+					name: album.name,
+					Tema: album.Tema,
+					photos: photosURI
+				};
+				userAlbums.push(albumOutput);
 			});
 			res.json(userAlbums);
 		}

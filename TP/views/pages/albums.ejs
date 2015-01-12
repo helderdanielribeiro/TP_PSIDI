@@ -8,7 +8,13 @@
 	<header>
 		<% include ../partials/header %>
 	</header>
-	<% if (user !== undefined){%>
+	<script>
+		function showAlbumPhotos(divName) {
+			var div = document.getElementById(divName).style.display = 'block';
+		}
+	</script>
+	
+	<% if (user.id !== undefined){%>
 		<div align="right">
 			<h4>Bem Vindo, <%=user.name%></h4><a href="/logout">Sair</a>
 		</div>
@@ -17,15 +23,16 @@
 		<h2>Albums</h2>
 		<div class="jumbotron">
 			<% albums.forEach(function(album) { %>
-				<div>
-					<h4><%=album.name%></h4>
+				<a onclick="showAlbumPhotos('<%=album.name%>');"><h2><%=album.name%></h2></a>
+				<div id="<%=album.name%>" style="display:none;">
 					<% album.photos.forEach(function(photo) { %>
-						<img src="<%=photo.uri%>" width="110" height="90">
-						<p><%=photo.description%></p>
-						<p><%=photo.date%></p>
+					<img src="<%=photo.uri%>" width="110" height="90">
+					<p><%=photo.description%></p>
+					<p><%=photo.date%></p>
 					<% }); %>
 				</div>
 			<% }); %>
+
 		</div>
 	</main>
 

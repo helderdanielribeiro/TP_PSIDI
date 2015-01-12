@@ -144,14 +144,34 @@ app.get('/', function(req, res) {
 app.get('/albums', function(req, res) {
 	if(req.isAuthenticated()){
 		request({
-			uri : backofficeUrl + "/users/" + req.user + "/albums",
+			uri : backofficeUrl + "/users/" + req.user.id + "/albums",
 			json : {}
 			},
 		function(err, response, body){
 			var albums = [];
 			albums = body;
+			console.log(albums);
 			res.render('pages/albums', {
 				albums: albums,
+				user : req.user
+			});
+		});
+	}else{
+		res.redirect('/login');
+	}
+});
+
+app.get('/encomendas', function(req, res) {
+	if(req.isAuthenticated()){
+		request({
+			uri : backofficeUrl + "/users/" + req.user + "/orders",
+			json : {}
+			},
+		function(err, response, body){
+			var albums = [];
+			albums = body;
+			res.render('pages/encomendas', {
+				encomendas: encomendas,
 				user : req.user
 			});
 		});
