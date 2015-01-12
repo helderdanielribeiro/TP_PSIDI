@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<% include ../partials/head %>
+</head>
+<body class="container">
+
+	<header>
+		<% include ../partials/header %>
+		<% if (user.id !== undefined){%>
+			<div align="right">
+				<h4>Bem Vindo, <%=user.name%></h4><a href="/logout">Sair</a>
+			</div>
+		<% }%>
+	</header>
+
+	<main>
+		<div class="jumbotron">
+			<h4>Preco da Encomenda:</h4> <p><%=order.preco%> euros</p>
+			<form id="orderform" action="/order/confirm" method="post">
+				<input type="hidden" id="order" name="order" value="<%=order.id%>">
+				<input type="submit" name = "resposta" value="Confirmar" id="btn-order" ></input> 
+				<input type="submit" name = "resposta" value="Cancelar" id="btn-order" ></input> 
+			</form>
+		</div>
+	</main>
+
+	<footer>
+		<% include ../partials/footer %>
+	</footer>
+	
+</body>
+</html>

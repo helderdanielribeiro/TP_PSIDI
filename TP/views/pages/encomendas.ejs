@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<% include ../partials/head %>
+</head>
+<body class="container">
+
+	<header>
+		<% include ../partials/header %>
+		<% if (user.id !== undefined){%>
+			<div align="right">
+				<h4>Bem Vindo, <%=user.name%></h4><a href="/logout">Sair</a>
+			</div>
+		<% }%>
+	</header>
+	<script>
+		function showEncomendaForm() {
+			var form = document.getElementById("orderform").style.display = 'block';
+		}
+	</script>
+
+	<main>
+		<div class="jumbotron">
+			<h2>Encomendas Existentes</h2>
+			<% encomendas.forEach(function(encomenda) { %>
+				<h2><%=encomenda.name%></h2>
+				<p><%=encomenda.preco%> euros</p>
+				<p><%=encomenda.morada%></p>
+				<p><%=encomenda.quote%></p>
+				<p><%=encomenda.status%></p>
+				<% if(encomenda.pdf !== undefined) { %>
+					<form action="/albumsimpressao/pdf" method="get">
+						<input type="hidden" id="link" name="link" value="<%=encomenda.pdf%>">
+						<input type="submit" value="PDF">
+					</form> 
+				<% }; %>
+			<% }); %>
+			
+			</br>
+			<button onclick="showEncomendaForm();">Criar Encomenda</button>
+			<form id="orderform" action="/order" style="display:none;" method="post">
+				<label>Seleccione as fotos para o Album</label></br>
+				<% albums.forEach(function(album) { %>
+						<% album.photos.forEach(function(photo) { %>
+							<img src="<%=photo.uri%>" width="110" height="90">
+							<input type="checkbox" name="photos" value="<%=photo.uri%>">
+						<% }); %>
+				<% }); %>
+				<div>
+					<label>Titulo</label>
+					<div>
+						<input type="text" name="titulo" placeholder="titulo">
+					</div>
+				</div>
+				<div>
+					<label>Mensagem</label>
+					<div>
+						<input type="text" name="mensagem" placeholder="mensagem">
+					</div>
+				</div>
+				<div>
+					<label>Tema</label>
+					<div>
+						<input type="text" name="tema" placeholder="tema">
+					</div>
+				</div>
+				<div>
+					<label>Morada</label>
+					<div>
+						<input type="text" name="morada" placeholder="morada">
+					</div>
+				</div>
+				<div>
+				<div>                                     
+					<div>
+						<input type="submit" value="Encomendar" id="btn-order" ></input> 
+					</div>
+				</div>   
+			</form>  
+		</div>
+	</main>
+
+	<footer>
+		<% include ../partials/footer %>
+	</footer>
+	
+</body>
+</html>
