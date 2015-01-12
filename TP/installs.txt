@@ -1,0 +1,11 @@
+npm install
+
+npm install -g nodemon
+
+npm install request
+
+npm install cookie-parser
+
+npm install express-session
+
+npm install passport

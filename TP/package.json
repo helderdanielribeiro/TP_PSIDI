@@ -1,0 +1,12 @@
+{
+  "name": "node-myphotoalbum",
+  "main": "app.js",
+  "dependencies": {
+    "ejs": "^1.0.0",
+    "express": "*",
+    "express-ejs-layouts": "^1.1.0",
+	"body-parser": "*",
+	"multer": "~0.1.6",
+	"pdfkit": "0.5.2"
+  }
+}

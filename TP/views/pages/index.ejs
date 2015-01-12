@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<% include ../partials/head %>
+</head>
+<body class="container">
+
+	<header>
+		<% include ../partials/header %>
+		<% if (user !== undefined){%>
+			<div align="right">
+				<h4>Bem Vindo, <%=user.name%></h4><a href="/logout">Sair</a>
+			</div>
+		<% }%>
+	</header>
+
+	<main>
+		<div class="jumbotron">
+		    <p>Bem Vindo ao</p>
+			<h1>MyPhotoAlbum</h1>
+		</div>
+	</main>
+
+	<footer>
+		<% include ../partials/footer %>
+	</footer>
+	
+</body>
+</html>
