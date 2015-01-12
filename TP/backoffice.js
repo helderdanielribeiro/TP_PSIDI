@@ -39,8 +39,48 @@ app.route("/users/:userID/albums")
 	.put(userHandling.handlePutUserAlbums)
 	.post(userHandling.handlePostUserAlbums)
 	.delete(userHandling.handleDeleteUserAlbums);
-
 	
+//
+// Order subresource
+//
+app.route("/users/:userID/orders") 
+	.get(userHandling.handleGetUserOrders)
+	.put(userHandling.handlePutUserOrders)
+	.post(userHandling.handlePostUserOrders)
+	.delete(userHandling.handleDeleteUserOrders);
+	
+app.param('orderID', function(req, res, next, orderID){
+  req.orderID = orderID;
+  return next()
+})
+
+app.route("/users/:userID/orders/:orderID") 
+	.get(userHandling.handleGetUserOrder)
+	.put(userHandling.handlePutUserOrder)
+	.post(userHandling.handlePostUserOrder)
+	.delete(userHandling.handleDeleteUserOrder);
+
+//
+// Order subresource
+//
+
+app.route("/users/:userID/albumsimpressao") 
+	.get(userHandling.handleGetAlbumsImpressao)
+	.put(userHandling.handlePutAlbumsImpressao)
+	.post(userHandling.handlePostAlbumsImpressao)
+	.delete(userHandling.handleDeleteAlbumsImpressao);
+	
+app.param('albumimpressaoID', function(req, res, next, albumimpressaoID){
+  req.albumimpressaoID = albumimpressaoID;
+  return next()
+})
+
+app.route("/users/:userID/albumsimpressao/:albumimpressaoID") 
+	.get(userHandling.handleGetAlbumImpressao)
+	.put(userHandling.handlePostAlbumImpressao)
+	.post(userHandling.handlePutAlbumImpressao)
+	.delete(userHandling.handleDeleteAlbumImpressao);
+
 //
 // PHOTOS resource
 //
