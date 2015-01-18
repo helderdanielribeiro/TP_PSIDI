@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<% include ../partials/head %>
+</head>
+<body class="container">
+
+	<header>
+		<% include ../partials/header %>
+		<% if (user.id !== undefined){%>
+			<div align="right">
+				<h4>Bem Vindo, <%=user.name%></h4><a href="/logout">Sair</a>
+			</div>
+		<% }%>
+	</header>
+
+	<main>
+		<div class="jumbotron">
+		    <p>Bem Vindo ao</p>
+			<h1>MyPhotoAlbum</h1>
+		</div>
+		
+		<form class="form-inline">
+  <div class="form-group">
+    <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
+    <div class="input-group">
+      
+      <input type="text" class="form-control" id="numPhotos" placeholder="Amount">
+      <div class="input-group-addon">fotos</div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Obter Orçamento</button>
+  
+  <% if (budget.length > 0) { %>
+							<div  id="login-alert" class="alert alert-danger col-sm-12"><%= budget %></div>
+							   <% } %>
+  
+</form>
+	</main>
+
+	<footer>
+		<% include ../partials/footer %>
+	</footer>
+	
+</body>
+</html>

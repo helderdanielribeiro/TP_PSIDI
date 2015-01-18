@@ -25,18 +25,18 @@ var backofficeUrl = "http://localhost:3001";
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
-// definição das opções para evitar warnings
+// definiï¿½ï¿½o das opï¿½ï¿½es para evitar warnings
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(cookieParser());
 app.use(expressSession({secret : process.env.SESSION_SECRET || 'some_secret', resave : false, saveUninitialized : false}));
 
-// "para agarrar" a sessão
+// "para agarrar" a sessï¿½o
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(flash());
 
-// fazer validações de utilizador
+// fazer validaï¿½ï¿½es de utilizador
 passport.use('login',new passportLocal.Strategy(function(username, password, done) {
 	//  login
 	if (username !== "" && password !== "") {
@@ -56,7 +56,7 @@ passport.use('login',new passportLocal.Strategy(function(username, password, don
 				} else {
 					app.locals.reg_success='';
 					return done(null, false, {
-						message : 'Dados Inválidos.'
+						message : 'Dados Invï¿½lidos.'
 					});
 				}
 		});
@@ -79,12 +79,12 @@ passport.deserializeUser(function(id, done) {
 	});
 });
 
-// GET da página login
+// GET da pï¿½gina login
 app.get('/login', function(req, res) {
 	res.render('pages/login',{ message: req.flash('error') });
 });
 
-//GET da página signup
+//GET da pï¿½gina signup
 app.get('/signup',function(req,res){
 	res.render('pages/signup');
   });
@@ -121,7 +121,7 @@ app.post('/signup', function(req, res) {
 		});
 });
 
-// Post da página login
+// Post da pï¿½gina login
 app.post('/login', passport.authenticate('login', { successRedirect: '/', failureRedirect: '/login', failureFlash: true }));
 
 // GET do Logout

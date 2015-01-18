@@ -1,4 +1,6 @@
 
+
+
 //
 // This is an async server that accepts POST requests with a callback and
 // when finished processing, POST the reply to the callback url
@@ -21,8 +23,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 const port = process.env.PORT || 3011;
 const SERVER_ROOT = "http://localhost:" + port;
-const unitPrice = 11;
-const discountPrice = 9;
+
 
 //DATA STORE
 
@@ -35,8 +36,10 @@ var yesterday = now.getDate() + 1;
 var jan1st2014 = new Date(2014, 01, 01);
 var may2nd2014 = new Date(2014, 05, 02);
 
+const pShop = "Printer Shop 1";
+const unitPrice = 11;
+const discountPrice = 9;
 
-var pShop = "Printer Shop 2";
 
 orders['20151'] = {id: "1", costumer:"Joao", albumName:"Vacations",	price:"40", 	createdOn: now, 		updatedOn: now};
 orders['20152'] = {id: "2", costumer:"Maria", albumName:"Christmas",	price:"50", 	createdOn: yesterday, 	updatedOn: now};
@@ -50,7 +53,7 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
-//Returns a the price of print service
+//Returns a the price of print service PS2
 function calcPrice(numPhotos) {
 	if(numPhotos<=10){
 		return numPhotos*unitPrice;
@@ -59,6 +62,17 @@ function calcPrice(numPhotos) {
 		return numPhotos*discountPrice;
 	}
 	
+}
+
+//defining a budget to a certain number of photos
+function buildBudget(price){
+	const now = new Date();
+	return {
+			printerShopID:"Printer Shop 2",
+			price : price, 
+			createdOn : now,
+			updatedOn : now,
+		};
 }
 
 function buildOrder(newID, costumer, albumName, price){
@@ -75,13 +89,14 @@ function buildOrder(newID, costumer, albumName, price){
 
 const request = require('request');
 
+//Return the budget to a specified request
 function postBack(callback, message,id, server) {
 	// POST message
 	request({
 	   uri : callback,
 	   method: "POST",
 	   json : message,
-	   server:server,
+	   server:server
 	   }, 
 	   function(err, res, body){
 	        if (!err) {
@@ -97,7 +112,7 @@ function postBack(callback, message,id, server) {
 //
 // handling the collection
 //
-// URL: /message
+// URL: /budget
 //
 // GET 		return all messages
 // POST		create new entry, returns 201
@@ -105,7 +120,7 @@ function postBack(callback, message,id, server) {
 // DELETE 	not allowed
 //
 
-app.route("/order") 
+app.route("/budget") 
 	.get(function(req, res) {
 		res.json(orders);
 	})
@@ -119,22 +134,23 @@ app.route("/order")
 			//Random timeout
 			const timeout = getRandomInt(1000,10000);
 			const finalPrice = calcPrice(req.body.numPhotos);
+			var budget = buildBudget( finalPrice);
 			console.log(req.body.reference+" waiting "+timeout+" miliseconds");
 			// queue the request - handle it when possible
 			setTimeout(function(){
 			   const now = new Date();
-			   orders[newID] = buildOrder(newID, req.body.costumer, req.body.albumName, finalPrice);			
+			   //orders[newID] = buildOrder(newID, req.body.costumer, req.body.albumName, finalPrice);			
 
 			   //POST back the result to callback
-			   postBack(req.body.callback, orders[newID], req.body.reference, pShop);
+			   postBack(req.body.callback, budget);
 			}, timeout);
 			
 			
 			
 
 			// send 202 Acepted and Location.
-			res.status(202).set('Location', SERVER_ROOT + "/message/" + newID).send();
-			console.log("Â»Â»Â» Accepted POST to new resource " + SERVER_ROOT + "/message/" + newID);
+			res.status(202).set('Location', SERVER_ROOT + "/budget/" + newID).send();
+			console.log("Â»Â»Â» Accepted POST to new resource " + SERVER_ROOT + "/budget/" + newID);
 			console.log("Â»Â»Â» Will POST back to "+req.body.callback+"withe the reference "+req.body.reference);
 		}
 		else {
@@ -149,7 +165,7 @@ app.route("/order")
 //
 // handling individual itens in the collection
 //
-// URL: /message/:id
+// URL: /order/:id
 //
 // GET 		return specific message or 404
 // POST 	update existing entry or 404
@@ -217,5 +233,4 @@ app.route("/order/:orderID")
 
 app.listen(port, function() {
   console.log("Listening on " + port + " tamanho do array "+Object.keys(orders).length);
-
 });

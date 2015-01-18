@@ -55,6 +55,17 @@ function calcPrice(numPhotos) {
 	return numPhotos*unitPrice;
 }
 
+//defining a budget to a certain number of photos
+function buildBudget(price){
+	const now = new Date();
+	return {
+			printerShopID:"Printer Shop 1",
+			price : price, 
+			createdOn : now,
+			updatedOn : now,
+		};
+}
+
 function buildOrder(newID, costumer, albumName, price){
 	const now = new Date();
 	return {
@@ -69,6 +80,7 @@ function buildOrder(newID, costumer, albumName, price){
 
 const request = require('request');
 
+//Return the budget to a specified request
 function postBack(callback, message,id, server) {
 	// POST message
 	request({
@@ -91,7 +103,7 @@ function postBack(callback, message,id, server) {
 //
 // handling the collection
 //
-// URL: /message
+// URL: /budget
 //
 // GET 		return all messages
 // POST		create new entry, returns 201
@@ -99,7 +111,7 @@ function postBack(callback, message,id, server) {
 // DELETE 	not allowed
 //
 
-app.route("/order") 
+app.route("/budget") 
 	.get(function(req, res) {
 		res.json(orders);
 	})
@@ -113,22 +125,23 @@ app.route("/order")
 			//Random timeout
 			const timeout = getRandomInt(1000,10000);
 			const finalPrice = calcPrice(req.body.numPhotos);
+			var budget = buildBudget( finalPrice);
 			console.log(req.body.reference+" waiting "+timeout+" miliseconds");
 			// queue the request - handle it when possible
 			setTimeout(function(){
 			   const now = new Date();
-			   orders[newID] = buildOrder(newID, req.body.costumer, req.body.albumName, finalPrice);			
+			   //orders[newID] = buildOrder(newID, req.body.costumer, req.body.albumName, finalPrice);			
 
 			   //POST back the result to callback
-			   postBack(req.body.callback, orders[newID], req.body.reference, req.params.pShop);
+			   postBack(req.body.callback, budget);
 			}, timeout);
 			
 			
 			
 
 			// send 202 Acepted and Location.
-			res.status(202).set('Location', SERVER_ROOT + "/message/" + newID).send();
-			console.log("Â»Â»Â» Accepted POST to new resource " + SERVER_ROOT + "/message/" + newID);
+			res.status(202).set('Location', SERVER_ROOT + "/budget/" + newID).send();
+			console.log("Â»Â»Â» Accepted POST to new resource " + SERVER_ROOT + "/budget/" + newID);
 			console.log("Â»Â»Â» Will POST back to "+req.body.callback+"withe the reference "+req.body.reference);
 		}
 		else {
@@ -143,7 +156,7 @@ app.route("/order")
 //
 // handling individual itens in the collection
 //
-// URL: /message/:id
+// URL: /order/:id
 //
 // GET 		return specific message or 404
 // POST 	update existing entry or 404
