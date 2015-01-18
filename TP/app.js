@@ -46,7 +46,6 @@ passport.use('login',new passportLocal.Strategy(function(username, password, don
 			},
 			function(err, response, body){
 				var user = body;
-				console.log(user.id);
 				if (user !== undefined) {
 					app.locals.reg_success='';
 					return done(null, {
@@ -98,12 +97,10 @@ app.post('/signup', function(req, res) {
 		},
 		function(err, response, body){
 			var user = body;
-			console.log(user);
 			if (user.id !== undefined) {
 				app.locals.msg='Nome de utilizador existente';
 				return res.redirect('/signup'); 
-			}else {		
-				console.log(req.body.username+" "+req.body.password+" "+req.body.email);
+			}else {	
 				request.post({
 					uri : backofficeUrl + "/users",
 					form : {
@@ -150,7 +147,6 @@ app.get('/albums', function(req, res) {
 		function(err, response, body){
 			var albums = [];
 			albums = body;
-			console.log(albums);
 			res.render('pages/albums', {
 				albums: albums,
 				user : req.user
@@ -164,17 +160,75 @@ app.get('/albums', function(req, res) {
 app.get('/encomendas', function(req, res) {
 	if(req.isAuthenticated()){
 		request({
-			uri : backofficeUrl + "/users/" + req.user + "/orders",
+			uri : backofficeUrl + "/users/" + req.user.id + "/orders",
 			json : {}
 			},
 		function(err, response, body){
-			var albums = [];
-			albums = body;
-			res.render('pages/encomendas', {
-				encomendas: encomendas,
+			var encomendas = [];
+			encomendas = body;
+			request({
+				uri : backofficeUrl + "/users/" + req.user.id + "/albums",
+				json : {}
+				},
+			function(err, response, body){
+				var albums = [];
+				albums = body;
+				console.log(encomendas);
+				res.render('pages/encomendas', {
+					encomendas: encomendas,
+					albums: albums,
+					user : req.user
+				});
+			});
+		});
+	}else{
+		res.redirect('/login');
+	}
+});
+
+app.post('/order', function(req, res) {
+	if(req.isAuthenticated()){
+		request.post({
+			headers: {'content-type' : 'application/json'},
+			uri: backofficeUrl + "/users/" + req.user.id + "/orders",
+			json: req.body
+         }, function(error, response, body){
+            res.render('pages/encomendasconfirm', {
+				user : req.user,
+				order : body
+			});
+		});
+	}else{
+		res.redirect('/login');
+	}
+});
+
+app.post('/order/confirm', function(req, res) {
+	if(req.isAuthenticated()){
+		request.put({
+			headers: {'content-type' : 'application/json'},
+			uri: backofficeUrl + "/users/" + req.user.id + "/orders/"+ req.body.order,
+			json: req.body
+         }, function(error, response, body){
+            res.render('pages/index', {
 				user : req.user
 			});
 		});
+	}else{
+		res.redirect('/login');
+	}
+});
+
+app.get('/albumsimpressao/pdf', function(req, res) {
+	if(req.isAuthenticated()){
+		request({
+		 uri : req.query.link,
+		 headers : {'Accept' : 'application/pdf'},
+		 })
+		.on('error', function(err){
+			  console.log(err);
+			})
+		.pipe(fs.createWriteStream(req.user.id + ".pdf"));
 	}else{
 		res.redirect('/login');
 	}
