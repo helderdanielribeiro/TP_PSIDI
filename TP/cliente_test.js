@@ -52,6 +52,7 @@ callbackApp.route("/callback").post(
 			console.log("From " + req.body.printerShopID + " the price is : "
 					+ req.body.price+ " e o best price is "+bestPrice.price);
 
+			//Updating bestPrice variable
 			if (bestPrice.price == 0) {
 				console.log("entra a primeira vez");
 				bestPrice = {
@@ -69,15 +70,6 @@ callbackApp.route("/callback").post(
 
 		});
 
-function selectBestPrice() {
-
-	return {
-		printerShopID : "Printer Shop 1",
-		price : price,
-		createdOn : now,
-		updatedOn : now,
-	};
-}
 
 // STARTING callback
 callbackApp.listen(callbackPort, function() {
