@@ -17,7 +17,8 @@ app.use(morgan('dev'));
 // LOCALS (acessible by views)
 app.locals.title='My Photo Album';
 app.locals.msg='';
-app.locals.reg_success=''
+app.locals.reg_success='';
+app.locals.waitMsg='testing'	;
 
 var backofficeUrl = "http://localhost:3001";
 //var user = "Diogo";

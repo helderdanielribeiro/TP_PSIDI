@@ -20,12 +20,13 @@ function getRandomInt(min, max) {
 // clients needs to be able to receive requests
 var express = require('express');
 var bodyParser = require('body-parser');
+var async = require('async');
+
 // var methodOverride = require('method-override');
 
 var callbackApp = express();
 
-callbackApp.locals.price='';
-
+callbackApp.locals.price = '';
 callbackApp.use(bodyParser.json());
 callbackApp.use(bodyParser.urlencoded({
 	extended : true
@@ -36,14 +37,47 @@ callbackPort = process.env.PORT || 3005;
 const
 CALLBACK_ROOT = "http://localhost:" + callbackPort;
 
-// callback routing
-callbackApp.route("/callback").post(function(req, res) {
-	// reply back
-	res.status(204).send("No Content");
+var bestPrice = {
+	id : 'undifined',
+	price : '0'
+};
 
-	// process the response to our initial request
-	console.log("From "+req.body.printerShopID+" the price is : " + req.body.price);
-});
+// callback routing
+callbackApp.route("/callback").post(
+		function(req, res) {
+			// reply back
+			res.status(204).send("No Content");
+
+			// process the response to our initial request
+			console.log("From " + req.body.printerShopID + " the price is : "
+					+ req.body.price+ " e o best price is "+bestPrice.price);
+
+			if (bestPrice.price == 0) {
+				console.log("entra a primeira vez");
+				bestPrice = {
+					id : req.body.printerShopID,
+					price : req.body.price
+				};
+			}
+
+			else if (bestPrice.price > req.body.price) {
+				bestPrice = {
+					id : req.body.printerShopID,
+					price : req.body.price
+				};
+			}
+
+		});
+
+function selectBestPrice() {
+
+	return {
+		printerShopID : "Printer Shop 1",
+		price : price,
+		createdOn : now,
+		updatedOn : now,
+	};
+}
 
 // STARTING callback
 callbackApp.listen(callbackPort, function() {
@@ -53,70 +87,107 @@ callbackApp.listen(callbackPort, function() {
 //
 // CLIENT
 //
-const request = require('request');
-const serverUrl1 = process.argv[2] || "http://localhost:3010";
-const serverUrl2 = process.argv[2] || "http://localhost:3011";
-const serverUrl3 = process.argv[2] || "http://localhost:3012";
+const
+request = require('request');
+const
+serverUrl1 = process.argv[2] || "http://localhost:3010";
+const
+serverUrl2 = process.argv[2] || "http://localhost:3011";
+const
+serverUrl3 = process.argv[2] || "http://localhost:3012";
 
 const
-requestNumber = 12;
+requestNumber = 62;
 
-if ( requestNumber !== 0){
-	// POST message
-	//PShop1
-	request({
-		uri : serverUrl1 + "/budget",
-		method : "POST",
-		json : {
-			costumer : "Ze Manel",
-			albumName : "Test Album",
-			numPhotos:requestNumber,
-			reference : "Process "+requestNumber,
-			callback : CALLBACK_ROOT + "/callback"
+// POST message
+// PShop1
+// function test (req, res) {
+async.parallel([
+
+		function(callback) {
+			request({
+				uri : serverUrl1 + "/budget",
+				method : "POST",
+				json : {
+					costumer : "Ze Manel",
+					albumName : "Test Album",
+					numPhotos : requestNumber,
+					reference : "Process " + requestNumber,
+					callback : CALLBACK_ROOT + "/callback"
+				},
+			}, function(err, res, body) {
+				if (!err) {
+					console.log("Process PShop 1" + requestNumber
+							+ " Posted request and got " + res.statusCode);
+
+					callback(false, res.statusCode);
+				} else {
+					console.log(err);
+					callback(true);
+					return;
+				}
+			})
 		},
-	}, function(err, res, body) {
-		if (!err) {
-			console.log("Process PShop 1"+requestNumber+" Posted request and got " + res.statusCode );
-		} else {
-			console.log(err);
-		}
-	});
-	
-	//PShop2
-	request({
-		uri : serverUrl2 + "/budget",
-		method : "POST",
-		json : {
-			costumer : "Ze Manel",
-			albumName : "Test Album",
-			numPhotos:requestNumber,
-			reference : "Process "+requestNumber,
-			callback : CALLBACK_ROOT + "/callback"
+
+		// PShop2
+		function(callback) {
+			request({
+				uri : serverUrl2 + "/budget",
+				method : "POST",
+				json : {
+					costumer : "Ze Manel",
+					albumName : "Test Album",
+					numPhotos : requestNumber,
+					reference : "Process " + requestNumber,
+					callback : CALLBACK_ROOT + "/callback"
+				},
+			}, function(err, res, body) {
+				if (!err) {
+					console.log("Process PShop 2" + requestNumber
+							+ " Posted request and got " + res.statusCode);
+
+					callback(false, body);
+				} else {
+					console.log(err);
+					callback(true);
+					return;
+				}
+			})
 		},
-	}, function(err, res, body) {
-		if (!err) {
-			console.log("Process PShop 2"+requestNumber+" Posted request and got " + res.statusCode );
-		} else {
-			console.log(err);
-		}
-	});
-	
-	//PShop3
-	request({
-		uri : serverUrl3 + "/budget",
-		method : "POST",
-		json : {
-			costumer : "Ze Manel",
-			albumName : "Test Album",
-			numPhotos:requestNumber,
-			reference : "Process "+requestNumber,
-			callback : CALLBACK_ROOT + "/callback"
-		},
-	}, function(err, res, body) {
-		if (!err) {
-			console.log("Process PShop 3"+requestNumber+" Posted request and got " + res.statusCode );
-		} else {
-			console.log(err);
-		}
-	});
-}
+
+		// PShop3
+		function(callback) {
+			request({
+				uri : serverUrl3 + "/budget",
+				method : "POST",
+				json : {
+					costumer : "Ze Manel",
+					albumName : "Test Album",
+					numPhotos : requestNumber,
+					reference : "Process " + requestNumber,
+					callback : CALLBACK_ROOT + "/callback"
+				},
+			}, function(err, res, body) {
+				if (!err) {
+					console.log("Process PShop 3" + requestNumber
+							+ " Posted request and got " + res.statusCode);
+
+					callback(false, res.body);
+				} else {
+					console.log(err);
+					callback(true);
+					return;
+				}
+			})
+		} ], function(err, results) {
+	if (err) {
+		console.log(err);
+		res.send(500, "Server Error");
+		return;
+	}
+	setTimeout(function() {
+		console.log("Best price: " + bestPrice.price + " from " + bestPrice.id)
+	}, 10000);
+});
+// }
+

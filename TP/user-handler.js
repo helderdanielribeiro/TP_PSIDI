@@ -161,6 +161,13 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function waitPrice(orderObj){
+	var count = 0;
+	setInterval(function(){
+	  count++;
+	  orderObj.preco = "A calcular preço." + new Array(count % 4).join('.');
+	}, 1000);
+}
 
 // users/:userid
 
@@ -417,7 +424,7 @@ function handlePostUserOrders(req, res) {
 				var newOrder = {
 					id: guid(), 
 					morada: req.body.morada, 
-					preco: photosNumber*1.05, 
+					preco: photosNumber, 
 					status:"Aguarda Aceitação", 
 					distancia: "", 
 					quote:"", 
@@ -493,7 +500,7 @@ function handleGetAlbumImpressao(req, res){
 		var encomenda = {};
 		if(encomendas[req.userID] !== undefined){
 			encomendas[req.userID].forEach(function(order){
-				if(order.albumimpressao == req.albumimpressaoID){
+				if(order.albumimpressao === req.albumimpressaoID){
 					encomenda = order;
 			}});
 		}
@@ -507,8 +514,7 @@ function handleGetAlbumImpressao(req, res){
 						'default': function() {
 							// log the request and respond with 406
 							res.status(406).send('Not Acceptable');
-						}
-					});		  	
+						}});		  	
 	}
 	};
 
